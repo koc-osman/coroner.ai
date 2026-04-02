@@ -26,16 +26,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000';
 
   return {
-    title: `${report.subject_name}'s Career Autopsy — coroner.ai`,
-    description: `AI Exposure: ${report.ai_exposure_score.score}/100 (${report.ai_exposure_score.severity}). Career death date: ${report.career_death_date}.`,
+    title: `${report.subject_name}'s Career Autopsy — AI Exposure: ${report.ai_exposure_score.score}/100`,
+    description: `${report.ai_exposure_score.severity}. Career death date: ${report.career_death_date}. ${report.cause_of_death}`,
     openGraph: {
-      title: `${report.subject_name}'s Career Autopsy`,
+      title: `${report.subject_name}'s Career Autopsy — AI Exposure: ${report.ai_exposure_score.score}/100`,
       description: report.cause_of_death,
       images: [{ url: `${baseUrl}/api/og?id=${id}`, width: 1200, height: 630 }],
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${report.subject_name}'s Career Autopsy — coroner.ai`,
+      title: `${report.subject_name}'s Career Autopsy — AI Exposure: ${report.ai_exposure_score.score}/100`,
       description: report.cause_of_death,
       images: [`${baseUrl}/api/og?id=${id}`],
     },

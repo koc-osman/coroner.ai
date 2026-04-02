@@ -1,9 +1,23 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Coroner AI",
-  description: "AI Career Autopsy",
+  title: "coroner.ai — Career Autopsy by AI",
+  description:
+    "Upload your LinkedIn screenshot. Find out when AI kills your career.",
+  openGraph: {
+    title: "coroner.ai — Career Autopsy by AI",
+    description:
+      "Upload your LinkedIn screenshot. Find out when AI kills your career.",
+    siteName: "coroner.ai",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "coroner.ai — Career Autopsy by AI",
+    description:
+      "Upload your LinkedIn screenshot. Find out when AI kills your career.",
+  },
 };
 
 export default function RootLayout({
@@ -13,7 +27,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full antialiased">
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }

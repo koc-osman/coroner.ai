@@ -26,7 +26,7 @@ export default function UploadZone({ onSuccess }: UploadZoneProps) {
       return 'Invalid file type. Please upload a JPEG, PNG, or WebP image.';
     }
     if (file.size > MAX_BYTES) {
-      return 'File is too large. Maximum size is 5MB.';
+      return "This file is too large. We're a morgue, not a warehouse. Max 5MB.";
     }
     return null;
   }

@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     const { allowed, remaining } = await checkRateLimit(ip);
     if (!allowed) {
       return NextResponse.json(
-        { error: 'Rate limit exceeded. You may submit 5 autopsies per day.' },
+        { error: "You've used all your autopsies for today. Come back tomorrow." },
         {
           status: 429,
           headers: { 'X-RateLimit-Remaining': '0' },
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
     // Validate MIME type
     if (!ALLOWED_MIME_TYPES.has(file.type)) {
       return NextResponse.json(
-        { error: 'Invalid file type. Accepted formats: JPEG, PNG, WebP' },
+        { error: 'Invalid file type. The morgue only accepts JPEG, PNG, or WebP images.' },
         { status: 400 }
       );
     }
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
     // Validate file size
     if (file.size > MAX_FILE_SIZE) {
       return NextResponse.json(
-        { error: 'File too large. Maximum size is 5MB.' },
+        { error: "This file is too large. We're a morgue, not a warehouse. Max 5MB." },
         { status: 400 }
       );
     }
@@ -99,8 +99,14 @@ export async function POST(request: NextRequest) {
     try {
       profile = await parseScreenshot(base64, mimeType);
     } catch (err) {
+      const msg = err instanceof Error ? err.message : '';
+      const isInvalid = msg.toLowerCase().includes('invalid screenshot') || msg.toLowerCase().includes('not a linkedin');
       return NextResponse.json(
-        { error: err instanceof Error ? err.message : 'Failed to parse screenshot' },
+        {
+          error: isInvalid
+            ? "This doesn't look like a LinkedIn profile. The coroner needs a proper body."
+            : "The autopsy failed. Even AI has bad days. Try again.",
+        },
         { status: 422 }
       );
     }
@@ -108,9 +114,9 @@ export async function POST(request: NextRequest) {
     let report: AutopsyReport;
     try {
       report = await generateAutopsy(profile);
-    } catch (err) {
+    } catch {
       return NextResponse.json(
-        { error: err instanceof Error ? err.message : 'Failed to generate autopsy report' },
+        { error: "The autopsy failed. Even AI has bad days. Try again." },
         { status: 500 }
       );
     }
