@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { kv } from '@vercel/kv';
-import { parseScreenshot, generateAutopsy } from '@/lib/ai';
+import { parseFile, generateAutopsy } from '@/lib/ai';
+import type { FileKind } from '@/lib/ai';
 import { saveReport, updateLeaderboard, incrementDailyCount } from '@/lib/kv';
 import type { AutopsyReport } from '@/lib/types';
 
@@ -9,7 +10,13 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const RATE_LIMIT = 5;
 const RATE_LIMIT_WINDOW_SECONDS = 24 * 60 * 60; // 24 hours
 
-const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
+const ALLOWED_MIME_TYPES = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+]);
 
 async function getClientIp(headersList: Awaited<ReturnType<typeof headers>>): Promise<string> {
   return (
@@ -76,7 +83,7 @@ export async function POST(request: NextRequest) {
     // Validate MIME type
     if (!ALLOWED_MIME_TYPES.has(file.type)) {
       return NextResponse.json(
-        { error: 'Invalid file type. The morgue only accepts JPEG, PNG, or WebP images.' },
+        { error: 'Invalid file type. The morgue accepts JPEG, PNG, WebP, PDF, or DOCX.' },
         { status: 400 }
       );
     }
@@ -89,22 +96,38 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Convert to base64
+    // Build typed file input for AI pipeline
     const arrayBuffer = await file.arrayBuffer();
-    const base64 = Buffer.from(arrayBuffer).toString('base64');
-    const mimeType = file.type as 'image/jpeg' | 'image/png' | 'image/webp';
+    let fileInput: FileKind;
+
+    if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+      const mammoth = await import('mammoth');
+      const result = await mammoth.extractRawText({ buffer: Buffer.from(arrayBuffer) });
+      if (!result.value.trim()) {
+        return NextResponse.json({ error: 'Could not extract text from this Word document.' }, { status: 422 });
+      }
+      fileInput = { kind: 'docx', text: result.value };
+    } else if (file.type === 'application/pdf') {
+      fileInput = { kind: 'pdf', base64: Buffer.from(arrayBuffer).toString('base64') };
+    } else {
+      fileInput = {
+        kind: 'image',
+        base64: Buffer.from(arrayBuffer).toString('base64'),
+        mimeType: file.type as 'image/jpeg' | 'image/png' | 'image/webp',
+      };
+    }
 
     // AI pipeline
     let profile;
     try {
-      profile = await parseScreenshot(base64, mimeType);
+      profile = await parseFile(fileInput);
     } catch (err) {
       const msg = err instanceof Error ? err.message : '';
-      const isInvalid = msg.toLowerCase().includes('invalid screenshot') || msg.toLowerCase().includes('not a linkedin');
+      const isInvalid = msg.toLowerCase().includes('invalid document') || msg.toLowerCase().includes('not a');
       return NextResponse.json(
         {
           error: isInvalid
-            ? "This doesn't look like a LinkedIn profile. The coroner needs a proper body."
+            ? "This doesn't look like a career profile. Please upload a LinkedIn screenshot, PDF CV, or Word CV."
             : "The autopsy failed. Even AI has bad days. Try again.",
         },
         { status: 422 }

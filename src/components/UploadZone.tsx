@@ -3,8 +3,18 @@
 import { useRef, useState, useCallback } from 'react';
 import LoadingAnimation from './LoadingAnimation';
 
-const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const ACCEPTED_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+];
 const MAX_BYTES = 5 * 1024 * 1024;
+
+function isImageType(type: string) {
+  return type.startsWith('image/');
+}
 
 type UploadState =
   | { status: 'empty' }
@@ -131,12 +141,21 @@ export default function UploadZone({ onSuccess }: UploadZoneProps) {
       <div className="flex flex-col gap-3">
         {/* Preview row */}
         <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={state.previewUrl}
-            alt="Preview"
-            className="w-14 h-14 object-cover rounded-lg shrink-0 border border-gray-200"
-          />
+          {isImageType(state.file.type) ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={state.previewUrl}
+              alt="Preview"
+              className="w-14 h-14 object-cover rounded-lg shrink-0 border border-gray-200"
+            />
+          ) : (
+            <div className="w-14 h-14 rounded-lg shrink-0 border border-gray-200 bg-white flex flex-col items-center justify-center gap-0.5">
+              <DocumentIcon className="w-6 h-6 text-gray-400" />
+              <span className="text-[9px] font-semibold uppercase text-gray-400 tracking-wide">
+                {state.file.type.includes('pdf') ? 'PDF' : 'DOCX'}
+              </span>
+            </div>
+          )}
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium text-gray-800 truncate">{state.file.name}</p>
             <p className="text-xs text-gray-500 mt-0.5">
@@ -171,6 +190,7 @@ export default function UploadZone({ onSuccess }: UploadZoneProps) {
   }
 
   // ── Empty / drop zone ────────────────────────────────────
+
   return (
     <div className="flex flex-col gap-3">
       <div
@@ -194,9 +214,9 @@ export default function UploadZone({ onSuccess }: UploadZoneProps) {
           <UploadIcon className="w-5 h-5 text-gray-400" />
         </div>
         <div>
-          <p className="text-sm font-medium text-gray-700">Upload your LinkedIn Experience section or CV</p>
-          <p className="text-xs text-gray-400 mt-1">Screenshot your Experience section for maximum damage</p>
-          <p className="text-xs text-gray-300 mt-1.5">JPEG · PNG · WebP · max 5 MB</p>
+          <p className="text-sm font-medium text-gray-700">Upload your LinkedIn screenshot or CV</p>
+          <p className="text-xs text-gray-400 mt-1">LinkedIn Experience section · PDF CV · Word CV</p>
+          <p className="text-xs text-gray-300 mt-1.5">JPEG · PNG · WebP · PDF · DOCX · max 5 MB</p>
         </div>
       </div>
 
@@ -227,6 +247,18 @@ function UploadIcon({ className }: { className?: string }) {
       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
       <polyline points="17 8 12 3 7 8" />
       <line x1="12" y1="3" x2="12" y2="15" />
+    </svg>
+  );
+}
+
+function DocumentIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" className={className}>
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="16" y1="13" x2="8" y2="13" />
+      <line x1="16" y1="17" x2="8" y2="17" />
+      <polyline points="10 9 9 9 8 9" />
     </svg>
   );
 }

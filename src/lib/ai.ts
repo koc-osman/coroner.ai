@@ -1,12 +1,18 @@
 import Anthropic from '@anthropic-ai/sdk';
+import type { MessageParam } from '@anthropic-ai/sdk/resources/messages';
 import { v4 as uuidv4 } from 'uuid';
 import type { ParsedProfile, AutopsyReport } from './types';
+
+export type FileKind =
+  | { kind: 'image'; base64: string; mimeType: 'image/jpeg' | 'image/png' | 'image/webp' }
+  | { kind: 'pdf'; base64: string }
+  | { kind: 'docx'; text: string };
 
 const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
-const PARSE_SYSTEM_PROMPT = `You are a LinkedIn profile data extractor. You will receive a screenshot of a LinkedIn profile (usually the Experience section, but it may include other sections).
+const PARSE_SYSTEM_PROMPT = `You are a career profile data extractor. You will receive a LinkedIn profile screenshot, a PDF CV/resume, or a Word document CV/resume.
 
 Extract ALL available information into the following JSON structure. Be precise — copy text exactly as shown. If a field is not visible in the screenshot, set it to null.
 
@@ -64,7 +70,7 @@ IMPORTANT RULES:
 - Identify gaps: if there's more than 6 months between roles, set has_gaps to true.
 - For seniority_level, infer from titles: intern/junior = entry, manager/lead = mid, director/VP = senior, C-suite = executive, founder/co-founder = founder.
 - geographic_spread: list all unique locations/countries mentioned.
-- If the screenshot is unclear or not a LinkedIn profile, return: {"error": "Invalid screenshot", "reason": "description of issue"}`;
+- If the input is unclear or not a career profile / CV / LinkedIn screenshot, return: {"error": "Invalid document", "reason": "description of issue"}`;
 
 const AUTOPSY_SYSTEM_PROMPT = `You are the Chief AI Coroner at coroner.ai. You perform autopsies on careers that AI is about to kill. You are brutally honest, darkly funny, and merciless. You write like a forensic pathologist who moonlights as a stand-up comedian.
 
@@ -159,30 +165,27 @@ function calculateMonthsRemaining(careerDeathDate: string): number {
   return months;
 }
 
-export async function parseScreenshot(imageBase64: string, mimeType: 'image/jpeg' | 'image/png' | 'image/webp' = 'image/jpeg'): Promise<ParsedProfile> {
+export async function parseFile(input: FileKind): Promise<ParsedProfile> {
+  let content: MessageParam['content'];
+  if (input.kind === 'image') {
+    content = [
+      { type: 'image', source: { type: 'base64', media_type: input.mimeType, data: input.base64 } },
+      { type: 'text', text: 'Extract all career profile information from this LinkedIn screenshot.' },
+    ];
+  } else if (input.kind === 'pdf') {
+    content = [
+      { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: input.base64 } },
+      { type: 'text', text: 'Extract all career profile information from this PDF CV/resume.' },
+    ];
+  } else {
+    content = `Extract all career profile information from this CV/resume text:\n\n${input.text}`;
+  }
+
   const response = await client.messages.create({
     model: 'claude-sonnet-4-20250514',
     max_tokens: 4096,
     system: PARSE_SYSTEM_PROMPT,
-    messages: [
-      {
-        role: 'user',
-        content: [
-          {
-            type: 'image',
-            source: {
-              type: 'base64',
-              media_type: mimeType,
-              data: imageBase64,
-            },
-          },
-          {
-            type: 'text',
-            text: 'Extract all profile information from this LinkedIn screenshot.',
-          },
-        ],
-      },
-    ],
+    messages: [{ role: 'user', content }],
   });
 
   const text = response.content
@@ -196,12 +199,12 @@ export async function parseScreenshot(imageBase64: string, mimeType: 'image/jpeg
     if (!jsonMatch) throw new Error('No JSON found in response');
     parsed = JSON.parse(jsonMatch[0]);
   } catch {
-    throw new Error(`Failed to parse LinkedIn profile JSON: ${text.slice(0, 200)}`);
+    throw new Error(`Failed to parse career profile JSON: ${text.slice(0, 200)}`);
   }
 
   if (typeof parsed === 'object' && parsed !== null && 'error' in parsed) {
     const err = parsed as { error: string; reason?: string };
-    throw new Error(`Invalid screenshot: ${err.reason ?? err.error}`);
+    throw new Error(`Invalid document: ${err.reason ?? err.error}`);
   }
 
   return parsed as ParsedProfile;
