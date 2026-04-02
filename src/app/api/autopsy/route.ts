@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { kv } from '@vercel/kv';
 import { parseScreenshot, generateAutopsy } from '@/lib/ai';
-import type { AutopsyReport, LeaderboardEntry } from '@/lib/types';
+import { saveReport, updateLeaderboard, incrementDailyCount } from '@/lib/kv';
+import type { AutopsyReport } from '@/lib/types';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const RATE_LIMIT = 5;
@@ -41,30 +42,6 @@ async function checkRateLimit(ip: string): Promise<{ allowed: boolean; remaining
   }
 }
 
-async function updateLeaderboard(report: AutopsyReport): Promise<void> {
-  const key = 'leaderboard';
-  const existing = (await kv.get<LeaderboardEntry[]>(key)) ?? [];
-
-  const jobCategory = report.job_category;
-  const score = report.ai_exposure_score.score;
-
-  const idx = existing.findIndex((e) => e.job_title === jobCategory);
-  if (idx === -1) {
-    existing.push({ job_title: jobCategory, total_autopsies: 1, average_score: score });
-  } else {
-    const entry = existing[idx];
-    const newTotal = entry.total_autopsies + 1;
-    existing[idx] = {
-      job_title: jobCategory,
-      total_autopsies: newTotal,
-      average_score: Math.round((entry.average_score * entry.total_autopsies + score) / newTotal),
-    };
-  }
-
-  // Keep top 20 by total autopsies
-  existing.sort((a, b) => b.total_autopsies - a.total_autopsies);
-  await kv.set(key, existing.slice(0, 20));
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -140,8 +117,9 @@ export async function POST(request: NextRequest) {
 
     // Persist to KV (best-effort — non-fatal if KV is unavailable)
     try {
-      await kv.set(`report:${report.id}`, report);
-      await updateLeaderboard(report);
+      await saveReport(report);
+      await updateLeaderboard(report.job_category, report.ai_exposure_score.score);
+      await incrementDailyCount();
     } catch (err) {
       console.warn('[autopsy] KV persistence failed:', err instanceof Error ? err.message : err);
     }

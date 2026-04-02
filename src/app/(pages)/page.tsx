@@ -1,8 +1,9 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import UploadZone from '@/components/UploadZone';
+import Leaderboard from '@/components/Leaderboard';
 
 export default function LandingPage() {
   const router = useRouter();
@@ -45,16 +46,43 @@ export default function LandingPage() {
         </div>
 
         {/* ── 3. Leaderboard ──────────────────────────────── */}
-        {/* Rendered in Phase 5 */}
+        <Leaderboard />
 
         {/* ── 4. Footer counter ───────────────────────────── */}
-        <p className="text-center text-xs text-gray-400 pb-4">
-          <span className="font-semibold text-gray-600">—</span>{' '}
-          careers pronounced dead today
-        </p>
+        <DeathCounter />
 
       </div>
     </main>
+  );
+}
+
+function DeathCounter() {
+  const [count, setCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch('/api/leaderboard')
+      .then((r) => r.json())
+      // daily count lives on a separate endpoint but we reuse the leaderboard
+      // fetch timing; the actual per-day count is fetched here independently
+      .catch(() => null);
+
+    fetch('/api/daily-count')
+      .then((r) => r.json())
+      .then((d: { count: number }) => setCount(d.count))
+      .catch(() => null);
+  }, []);
+
+  return (
+    <p className="text-center text-xs text-gray-400 pb-4">
+      {count !== null ? (
+        <>
+          <span className="font-semibold text-gray-600">{count.toLocaleString()}</span>{' '}
+          {count === 1 ? 'career' : 'careers'} pronounced dead today
+        </>
+      ) : (
+        <span className="text-gray-300">— careers pronounced dead today</span>
+      )}
+    </p>
   );
 }
 
