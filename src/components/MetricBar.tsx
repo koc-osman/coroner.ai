@@ -22,7 +22,7 @@ export default function MetricBar({ finding }: MetricBarProps) {
 
       {/* Bar + score */}
       <div className="flex-1 flex items-center gap-2">
-        <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+        <div className="flex-1 h-2.5 bg-gray-200 rounded-full overflow-hidden">
           <div
             className="h-full rounded-full transition-all duration-500"
             style={{ width: `${finding.score}%`, backgroundColor: barColor }}

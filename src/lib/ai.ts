@@ -148,6 +148,17 @@ RULES FOR afterlife.ghost_schedule:
 
 OVERALL: Every field must reference specific profile data. If you swapped in a different name, it should NOT make sense.`;
 
+function calculateMonthsRemaining(careerDeathDate: string): number {
+  // Parse "Month YYYY" format, e.g. "September 2025"
+  const parsed = new Date(careerDeathDate);
+  if (isNaN(parsed.getTime())) return 0;
+  const now = new Date();
+  const months =
+    (parsed.getFullYear() - now.getFullYear()) * 12 +
+    (parsed.getMonth() - now.getMonth());
+  return months;
+}
+
 export async function parseScreenshot(imageBase64: string, mimeType: 'image/jpeg' | 'image/png' | 'image/webp' = 'image/jpeg'): Promise<ParsedProfile> {
   const response = await client.messages.create({
     model: 'claude-sonnet-4-20250514',
@@ -197,6 +208,9 @@ export async function parseScreenshot(imageBase64: string, mimeType: 'image/jpeg
 }
 
 export async function generateAutopsy(profile: ParsedProfile): Promise<AutopsyReport> {
+  const now = new Date();
+  const todayStr = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
   const response = await client.messages.create({
     model: 'claude-sonnet-4-20250514',
     max_tokens: 4096,
@@ -204,7 +218,7 @@ export async function generateAutopsy(profile: ParsedProfile): Promise<AutopsyRe
     messages: [
       {
         role: 'user',
-        content: JSON.stringify(profile),
+        content: `Today's date is ${todayStr}. Use this as the reference for career_death_date calculations.\n\n${JSON.stringify(profile)}`,
       },
     ],
   });
@@ -225,8 +239,12 @@ export async function generateAutopsy(profile: ParsedProfile): Promise<AutopsyRe
 
   const report = parsed as Omit<AutopsyReport, 'id' | 'created_at'>;
 
+  // Calculate months_remaining server-side so it's always accurate
+  const monthsRemaining = calculateMonthsRemaining(report.career_death_date);
+
   return {
     ...report,
+    months_remaining: monthsRemaining,
     id: uuidv4(),
     created_at: new Date().toISOString(),
   };

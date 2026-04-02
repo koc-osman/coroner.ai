@@ -55,7 +55,7 @@ export default async function ReportPage({ params }: PageProps) {
     .join('');
 
   return (
-    <main className="min-h-screen bg-white py-8 px-4">
+    <main className="min-h-screen print:min-h-0 bg-white py-8 px-4 [print-color-adjust:exact] [-webkit-print-color-adjust:exact]">
       <div className="max-w-[520px] mx-auto">
         <div className="border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
 
@@ -125,7 +125,11 @@ export default async function ReportPage({ params }: PageProps) {
               {report.career_death_date}
             </div>
             <div className="text-sm text-gray-500 mt-1">
-              <span className="font-semibold text-gray-700">{report.months_remaining}</span> months remaining
+              {report.months_remaining > 0 ? (
+                <><span className="font-semibold text-gray-700">{report.months_remaining}</span> months remaining</>
+              ) : (
+                <span className="font-semibold text-[#E24B4A]">Already dead</span>
+              )}
             </div>
           </div>
 
