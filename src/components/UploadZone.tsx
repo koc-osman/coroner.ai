@@ -92,7 +92,7 @@ export default function UploadZone({ onSuccess }: UploadZoneProps) {
     } catch {
       setState({
         status: 'error',
-        message: 'Network error. Please check your connection and try again.',
+        message: 'Please upload a LinkedIn profile screenshot (Experience section) or a CV. Random images cannot be autopsied.',
       });
     }
   }
@@ -194,8 +194,8 @@ export default function UploadZone({ onSuccess }: UploadZoneProps) {
           <UploadIcon className="w-5 h-5 text-gray-400" />
         </div>
         <div>
-          <p className="text-sm font-medium text-gray-700">Upload your LinkedIn screenshot</p>
-          <p className="text-xs text-gray-400 mt-1">Experience section recommended for maximum damage</p>
+          <p className="text-sm font-medium text-gray-700">Upload your LinkedIn Experience section or CV</p>
+          <p className="text-xs text-gray-400 mt-1">Screenshot your Experience section for maximum damage</p>
           <p className="text-xs text-gray-300 mt-1.5">JPEG · PNG · WebP · max 5 MB</p>
         </div>
       </div>
