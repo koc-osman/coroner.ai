@@ -3,11 +3,11 @@
 import { useEffect, useRef, useState } from 'react';
 
 const MESSAGES = [
-  'Receiving body...',
-  'Examining career history...',
-  'Cross-referencing BLS occupational data...',
+  'Spreading the plastic wrap...',
+  'Analyzing blood spatter patterns...',
+  'Consulting the Dark Passenger...',
   'Calculating time of death...',
-  'Writing eulogy...',
+  'Preparing the kill table...',
 ];
 
 export default function LoadingAnimation() {

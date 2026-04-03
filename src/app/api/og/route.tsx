@@ -88,14 +88,17 @@ export async function GET(request: NextRequest) {
         >
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 0 }}>
             <span style={{ fontSize: 22, fontWeight: 800, color: DARK, letterSpacing: '-0.5px' }}>
-              coroner
+              dexter
             </span>
             <span style={{ fontSize: 22, fontWeight: 800, color: RED, letterSpacing: '-0.5px' }}>
+              me
+            </span>
+            <span style={{ fontSize: 22, fontWeight: 800, color: GRAY, letterSpacing: '-0.5px' }}>
               .ai
             </span>
           </div>
           <span style={{ fontSize: 13, color: '#9ca3af', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
-            Case #{case_number} · AI Career Autopsy
+            Case #{case_number} · Kill File
           </span>
         </div>
 
@@ -252,10 +255,10 @@ export async function GET(request: NextRequest) {
           }}
         >
           <span style={{ fontSize: 14, color: '#d1d5db' }}>
-            coroner.ai — AI career autopsy tool
+            dexterme.ai — AI career forensics
           </span>
           <span style={{ fontSize: 14, color: '#d1d5db' }}>
-            Find out when AI kills your career →
+            Find out when AI puts you on the kill table →
           </span>
         </div>
       </div>
@@ -282,15 +285,18 @@ function fallbackImage() {
       >
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 0 }}>
           <span style={{ fontSize: 72, fontWeight: 900, color: DARK, letterSpacing: '-2px' }}>
-            coroner
+            dexter
           </span>
           <span style={{ fontSize: 72, fontWeight: 900, color: RED, letterSpacing: '-2px' }}>
+            me
+          </span>
+          <span style={{ fontSize: 72, fontWeight: 900, color: GRAY, letterSpacing: '-2px' }}>
             .ai
           </span>
         </div>
         <div style={{ fontSize: 24, color: GRAY, textAlign: 'center', maxWidth: 600 }}>
-          We dissect your LinkedIn profile.
-          You find out when AI kills your career.
+          Upload your LinkedIn.
+          Find out when AI puts you on the kill table.
         </div>
       </div>
     ),

@@ -175,7 +175,7 @@ export default function UploadZone({ onSuccess }: UploadZoneProps) {
           onClick={handleSubmit}
           className="w-full py-3 rounded-xl text-sm font-semibold tracking-wide bg-[#E24B4A] text-white hover:bg-[#c73b3a] active:scale-[0.98] transition-all"
         >
-          Begin autopsy
+          Dexter me
         </button>
 
         <input

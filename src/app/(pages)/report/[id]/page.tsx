@@ -65,7 +65,7 @@ export default async function ReportPage({ params }: PageProps) {
               Case #{report.case_number}
             </span>
             <span className="text-sm font-bold tracking-tight text-gray-800">
-              coroner<span className="text-[#E24B4A]">.ai</span>
+              dexter<span className="text-[#E24B4A]">me</span><span className="text-gray-400">.ai</span>
             </span>
           </div>
 
@@ -148,7 +148,7 @@ export default async function ReportPage({ params }: PageProps) {
           {/* ── 6. Forensic Findings ──────────────────────────── */}
           <div className="px-5 py-4 border-b border-gray-100">
             <div className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-4">
-              Forensic Findings
+              Crime Scene Evidence
             </div>
             <div className="flex flex-col gap-4">
               {report.forensic_findings.map((finding, i) => (
@@ -182,7 +182,7 @@ export default async function ReportPage({ params }: PageProps) {
           {/* ── 9. Reincarnation ──────────────────────────────── */}
           <div className="px-5 py-4 border-b border-gray-100">
             <div className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-3">
-              AI Replacement
+              Your Replacement
             </div>
             <div className="border border-[#1D9E75] bg-[#E1F5EE] rounded-xl p-4">
               <div className="flex items-start justify-between gap-2 mb-2">
@@ -233,7 +233,7 @@ export default async function ReportPage({ params }: PageProps) {
           {/* ── 10. Ghost Schedule ────────────────────────────── */}
           <div className="px-5 py-4 border-b border-gray-100">
             <div className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-3">
-              Ghost Schedule (Post-Death Daily Routine)
+              Ghost Schedule (Post-Kill Daily Routine)
             </div>
             <div className="bg-gray-50 rounded-xl divide-y divide-gray-100 overflow-hidden">
               {report.afterlife.ghost_schedule.map((row, i) => (
@@ -250,7 +250,7 @@ export default async function ReportPage({ params }: PageProps) {
           {/* ── 11. Share Buttons ─────────────────────────────── */}
           <div className="px-5 py-4 border-b border-gray-100">
             <div className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-3">
-              Share Your Autopsy
+              Share Your Kill
             </div>
             <ShareButtons
               careerDeathDate={report.career_death_date}
@@ -263,13 +263,13 @@ export default async function ReportPage({ params }: PageProps) {
           {/* ── 12. CTA ───────────────────────────────────────── */}
           <div className="px-5 py-5 border-b border-gray-100 text-center">
             <p className="text-sm text-gray-600 mb-3 leading-snug">
-              Your career is dead. What about your colleague&apos;s?
+              You&apos;ve been wrapped in plastic. What about your colleagues?
             </p>
             <a
               href="/"
               className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#E24B4A] hover:underline"
             >
-              Perform another autopsy →
+              Dexter someone else →
             </a>
           </div>
 

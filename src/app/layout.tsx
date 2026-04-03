@@ -3,20 +3,20 @@ import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "coroner.ai — Career Autopsy by AI",
+  title: "dexterme.ai — AI Career Forensics",
   description:
-    "Upload your LinkedIn screenshot. Find out when AI kills your career.",
+    "Upload your LinkedIn. Find out when AI puts you on the kill table.",
   openGraph: {
-    title: "coroner.ai — Career Autopsy by AI",
+    title: "dexterme.ai — AI Career Forensics",
     description:
-      "Upload your LinkedIn screenshot. Find out when AI kills your career.",
-    siteName: "coroner.ai",
+      "Upload your LinkedIn. Find out when AI puts you on the kill table.",
+    siteName: "dexterme.ai",
   },
   twitter: {
     card: "summary_large_image",
-    title: "coroner.ai — Career Autopsy by AI",
+    title: "dexterme.ai — AI Career Forensics",
     description:
-      "Upload your LinkedIn screenshot. Find out when AI kills your career.",
+      "Upload your LinkedIn. Find out when AI puts you on the kill table.",
   },
 };
 

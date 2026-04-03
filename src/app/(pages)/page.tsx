@@ -24,23 +24,24 @@ export default function LandingPage() {
           <SkullIcon className="w-11 h-11 text-[#E24B4A]" />
 
           <p className="text-[10px] font-semibold tracking-[0.25em] uppercase text-gray-400">
-            Coroner&apos;s Office — AI Division
+            Forensic AI Division — Blood Spatter Analysis Unit
           </p>
 
           <h1 className="text-5xl font-black tracking-tight leading-none">
-            <span className="text-gray-900">coroner</span>
-            <span className="text-[#E24B4A]">.ai</span>
+            <span className="text-gray-900">dexter</span>
+            <span className="text-[#E24B4A]">me</span>
+            <span className="text-gray-400">.ai</span>
           </h1>
 
           <p className="text-sm text-gray-500 max-w-[340px] leading-relaxed mt-1">
-            We dissect your LinkedIn profile. You find out when AI kills your career.
+            Upload your LinkedIn. Find out when AI puts you on the kill table.
           </p>
         </div>
 
         {/* ── 2. Upload card ──────────────────────────────── */}
         <div className="border border-gray-200 rounded-2xl p-5 shadow-sm">
           <p className="text-[10px] font-semibold tracking-[0.2em] uppercase text-gray-400 mb-4">
-            Submit body for examination
+            Prepare the kill table
           </p>
           <UploadZone onSuccess={handleSuccess} />
         </div>
@@ -80,7 +81,7 @@ function DeathCounter() {
           {count === 1 ? 'career' : 'careers'} pronounced dead today
         </>
       ) : (
-        <span className="text-gray-300">— careers pronounced dead today</span>
+        <span className="text-gray-300">— careers wrapped in plastic today</span>
       )}
     </p>
   );

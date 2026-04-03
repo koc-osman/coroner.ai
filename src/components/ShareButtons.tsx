@@ -18,12 +18,12 @@ export default function ShareButtons({
   const [copied, setCopied] = useState(false);
 
   const xText = encodeURIComponent(
-    `I just got autopsied by AI. Career death date: ${careerDeathDate}. AI Exposure: ${score}/100 (${severity}). Get yours → coroner.ai`
+    `AI just Dextered me. Career death date: ${careerDeathDate}. AI Exposure: ${score}/100 (${severity}). Get Dextered → dexterme.ai`
   );
   const xUrl = `https://twitter.com/intent/tweet?text=${xText}`;
 
   const linkedInText = encodeURIComponent(
-    `coroner.ai just performed a career autopsy on me. ${monthsRemaining} months to live. Try it yourself.`
+    `dexterme.ai just wrapped my career in plastic. ${monthsRemaining} months to live. Get Dextered.`
   );
   const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
     typeof window !== 'undefined' ? window.location.href : ''
