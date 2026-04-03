@@ -7,7 +7,7 @@ import { saveReport, updateLeaderboard, incrementDailyCount } from '@/lib/kv';
 import type { AutopsyReport } from '@/lib/types';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const RATE_LIMIT = 5;
+const RATE_LIMIT = 20;
 const RATE_LIMIT_WINDOW_SECONDS = 24 * 60 * 60; // 24 hours
 
 const ALLOWED_MIME_TYPES = new Set([
