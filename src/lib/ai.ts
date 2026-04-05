@@ -151,6 +151,7 @@ RULES FOR eulogy:
 RULES FOR afterlife.ghost_schedule:
 - Each activity must reference something specific from their profile.
 - Start somewhat normal, end completely unhinged.
+- Use 24-hour time format (e.g. "09:00", "14:30", "21:00"). No AM/PM.
 
 OVERALL: Every field must reference specific profile data. If you swapped in a different name, it should NOT make sense.`;
 
