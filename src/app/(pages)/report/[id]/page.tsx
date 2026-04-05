@@ -7,6 +7,17 @@ import ScoreGauge from '@/components/ScoreGauge';
 import MetricBar from '@/components/MetricBar';
 import ShareButtons from '@/components/ShareButtons';
 
+function to24h(time: string): string {
+  const match = time.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (!match) return time;
+  let h = parseInt(match[1], 10);
+  const m = match[2];
+  const period = match[3].toUpperCase();
+  if (period === 'AM' && h === 12) h = 0;
+  if (period === 'PM' && h !== 12) h += 12;
+  return `${String(h).padStart(2, '0')}:${m}`;
+}
+
 // Memoize so generateMetadata and Page share one fetch
 const fetchReport = cache(async (id: string): Promise<AutopsyReport | null> => {
   try {
@@ -239,7 +250,7 @@ export default async function ReportPage({ params }: PageProps) {
               {report.afterlife.ghost_schedule.map((row, i) => (
                 <div key={i} className="flex items-start gap-3 px-4 py-3">
                   <span className="font-mono text-xs text-gray-400 shrink-0 w-14 pt-0.5">
-                    {row.time}
+                    {to24h(row.time)}
                   </span>
                   <span className="text-xs text-gray-700 leading-relaxed">{row.activity}</span>
                 </div>
