@@ -157,13 +157,18 @@ OVERALL: Every field must reference specific profile data. If you swapped in a d
 
 function calculateMonthsRemaining(careerDeathDate: string): number {
   // Parse "Month YYYY" format, e.g. "September 2025"
-  const parsed = new Date(careerDeathDate);
-  if (isNaN(parsed.getTime())) return 0;
+  const MONTH_MAP: Record<string, number> = {
+    january: 0, february: 1, march: 2, april: 3, may: 4, june: 5,
+    july: 6, august: 7, september: 8, october: 9, november: 10, december: 11,
+  };
+  const parts = careerDeathDate.trim().split(/\s+/);
+  if (parts.length < 2) return 0;
+  const month = MONTH_MAP[parts[0].toLowerCase()];
+  const year = parseInt(parts[parts.length - 1], 10);
+  if (month === undefined || isNaN(year)) return 0;
   const now = new Date();
-  const months =
-    (parsed.getFullYear() - now.getFullYear()) * 12 +
-    (parsed.getMonth() - now.getMonth());
-  return months;
+  const months = (year - now.getFullYear()) * 12 + (month - now.getMonth());
+  return Math.max(0, months);
 }
 
 export async function parseFile(input: FileKind): Promise<ParsedProfile> {
